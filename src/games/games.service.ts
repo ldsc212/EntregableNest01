@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
-import { CreateGameDto } from './dto/create-game.dto';
+import { CreateGameDto, GameState } from './dto/create-game.dto';
 import { UpdateGameDto } from './dto/update-game.dto';
 import { Game } from './entities/game.entity';
 import { InjectModel } from '@nestjs/sequelize';
@@ -52,13 +52,19 @@ export class GamesService {
     const { playerName } = updateGameDto;
     const game = await this.findOne(id);
 
-    if (game.players.includes(playerName!)) {
+    if (game.dataValues.players.includes(playerName!)) {
       throw new BadRequestException('The Player has already joined');
     }
-    game.players.push(playerName!);
+    const newPlayers = [...game.dataValues.players, playerName]
+
+    if (newPlayers.length > game.dataValues.maxPlayers) {
+      throw new BadRequestException('The game is full');
+    }
 
     try {
-      await game.save();
+      await game.update({
+        players: newPlayers,
+      });
       return {
         message: ' Joined success!',
       };
@@ -68,10 +74,40 @@ export class GamesService {
 
   }
 
+  async startGame(id: number) {
+    const game = await this.findOne(id)
+
+    try {
+      await game.update({
+        state: GameState.IN_PROGRESS,
+      });
+      return {
+        message: 'The game has been started',
+      };
+    } catch (error) {
+      this.handleDBException(error);
+    }
+  }
+
+  async endGame(id: number, updateGameDto: UpdateGameDto) {
+    const game = await this.findOne(id);
+    try {
+      await game.update({
+        score: updateGameDto.score,
+        state: GameState.FINISHED,
+      });
+      return {
+        message: 'Game finished',
+      };
+    } catch (error) {
+      this.handleDBException(error);
+    }
+
+  }
 
   private handleDBException(error: any) {
     if (error.parent.code === '23505') {
-      throw new BadRequestException(error.parent.detail);
+      throw new BadRequestException(error?.parent?.detail);
     }
 
     this.logger.error(error)

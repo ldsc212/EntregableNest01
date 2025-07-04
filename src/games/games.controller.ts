@@ -24,5 +24,14 @@ export class GamesController {
     return this.gamesService.joinGame(+id, updateGameDto);
   }
 
+  @Patch(':id/start')
+  starGame(@Param('id') id: string) {
+    return this.gamesService.startGame(+id)
+  }
+
+  @Patch(':id/end')
+  endGame(@Param('id') id: string, @Body() updateGameDto: UpdateGameDto) {
+    return this.gamesService.endGame(+id, updateGameDto);
+  }
 
 }

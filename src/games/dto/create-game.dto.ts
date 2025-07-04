@@ -9,15 +9,19 @@ export class CreateGameDto {
     @IsString()
     @IsNotEmpty()
     name: string;
+
     @IsInt()
     @Min(2)
     maxPlayers: number;
+
     @IsString()
     @IsOptional()
     playerName?: string;
+
     @IsEnum(GameState)
     @IsOptional()
     state: GameState;
+
     @IsObject()
     @IsOptional()
     score: Record<string, number>;
