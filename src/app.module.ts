@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { GamesModule } from './games/games.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { envs } from './config/envs';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { envs } from './config/envs';
       password: envs.DATABASE_PASSWORD,
       database: envs.DATABASE_NAME,
       autoLoadModels: true,
+      //sync: { force: true },
       synchronize: true,
       dialectOptions: {
         ssl: {
@@ -21,7 +23,8 @@ import { envs } from './config/envs';
           rejectUnauthorized: false,
         },
       },
-    })
+    }),
+    UsersModule
   ],
   controllers: [],
   providers: [],
