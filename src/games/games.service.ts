@@ -134,12 +134,19 @@ export class GamesService {
   async getPlayersByGame(gameId: number) {
     const game = await this.gameModel.findOne({
       where: { id: gameId },
-      include: ['players'], // Asegúrate que la relación esté definida como 'players'
+      include: [{
+        model: User,
+        as: 'players',
+        attributes: ['id', 'fullname', 'email'],
+        through: {
+          attributes: [],
+        },
+      }], // Asegúrate que la relación esté definida como 'players'
     });
     if (!game) {
       throw new BadRequestException(`Game with id ${gameId} not found`);
     }
-    return game.players;
+    return game;
   }
 
   private handleDBException(error: any) {
