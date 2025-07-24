@@ -4,7 +4,10 @@ import { User } from "src/users/entities/user.entity";
 import { allow } from "joi";
 
 
-@Table
+@Table({
+    tableName: 'game_players',
+    timestamps: true,
+})
 export class GamePlayer extends Model {
 
 

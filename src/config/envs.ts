@@ -15,6 +15,8 @@ interface EnvVar {
     DATABASE_PORT: number;
 
     DATABASE_NAME: string;
+
+    JWT_SECRET: string;
 }
 
 const envSchema = joi
@@ -25,6 +27,7 @@ const envSchema = joi
         DATABASE_HOST: joi.string().required(),
         DATABASE_PORT: joi.number().required(),
         DATABASE_NAME: joi.string().required(),
+        JWT_SECRET: joi.string().required(),
     })
     .unknown(true);
 
@@ -43,4 +46,5 @@ export const envs = {
     DATABASE_HOST: envVars.DATABASE_HOST,
     DATABASE_PORT: envVars.DATABASE_PORT,
     DATABASE_NAME: envVars.DATABASE_NAME,
+    JWT_SECRET: envVars.JWT_SECRET,
 };
